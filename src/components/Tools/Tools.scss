@@ -1,0 +1,196 @@
+@use '../../assets/mixins';
+
+$bg-tools:#345B63;
+
+
+.tools{
+	@include mixins.displayFlex($justify:space-between,$alignI:center);		
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	width: calc(100% - 10px);
+	padding: 10px 5px;
+	background-color: $bg-tools;	
+
+	li{
+		list-style: none;
+	}
+
+	&>div{
+		display: flex;
+		align-items: center;
+		gap:20px;
+	}
+
+	button>svg, button>span {
+		pointer-events: none;
+	}
+
+	button{
+		background-color: transparent;
+		color: #FFF;
+		border:none;
+	}
+
+	button, 
+	.snippets>svg,
+	.snippets--with-submenu>svg, 
+	.snippets--with-submenu>span,
+	.save-code>svg{
+		font: 600 2.2rem 'Inter', sans-serif;
+		padding: 5px;
+		cursor: pointer;				
+	}
+
+	.history button,
+	.snippets>svg,
+	.save-code>svg{
+		color: #FFF;
+
+		&:hover{
+			background-color: darken($bg-tools, 12%);	
+		}			
+	}
+
+	.submenu{
+		position: absolute;
+		left: 0;		
+		top:100%;    	
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		width: calc(100% - 16px);	
+		padding: 8px;	
+   		transform: scaleY(0);
+    	transform-origin: top center;
+    	transition: transform 300ms  ease-in-out,
+    				opacity 300ms  ease-in-out;
+    	background-color: #E3E3E3;
+    	opacity: 0;
+
+		button{
+	    	color:#333333;
+		}    	
+	}	
+
+	.snippets:hover>.submenu,
+	.snippets--with-submenu:hover .submenu,
+	.save-code:hover .submenu{
+		opacity: 1;
+		transform: scaleY(1);		    			
+    }
+
+
+    .snippets button, 
+    .snippets--with-submenu>svg,
+    .snippets--with-submenu>span,
+    .save-code button{
+    	&:hover{
+			background-color: darken(#E3E3E3, 12%);
+		}				    	
+    }
+
+	.history{
+		display: flex;
+		gap:3px;
+		
+		button:disabled,
+		button[disabled]{
+			opacity: 0.5;
+			cursor: default;
+
+			&:hover{
+				background-color: $bg-tools;	
+			}			
+		}
+	}
+
+	.snippets{
+		$position: (1:1, 2:2, 3:4, 4:6, 5:7, 6:8, 7:9, 8:3, 9:5, 10:10);
+
+		@each $i, $order in $position {
+		    &>li:nth-child(#{$i}),
+		    &>ul>li:nth-child(#{$i}){
+		    	order: $order;
+		    }
+		}
+
+    	&__heading .submenu{
+    		align-items: baseline;
+
+    		button{
+    			font-family: serif;
+    		}
+
+    		@for $i from 1 through 6 {
+				li:nth-child(#{$i}) button{
+					font-size: calc(3.8rem - (.4rem * (#{$i} - 1)));
+				}
+			}
+    	}
+
+    	&__list .submenu{
+    		gap:15px;
+
+    		svg{
+    			font-size: 3.8rem;
+    		}
+    	}
+
+    	&__more .submenu{
+    		gap:10px 8px;
+
+    		button{
+	    		font-size: 1.8rem;				
+    		}
+		} 
+	}
+
+	.save-code .submenu{
+		flex-direction: column;
+
+    	svg{
+    		margin-right: 5px;
+    	}
+
+		button{
+			font-size: 1.8rem;
+		}	
+	}
+}
+
+
+@media (min-width: 700px) {
+	.tools{
+		.snippets>li>button,
+		.snippets--with-submenu>svg, 
+		.snippets--with-submenu>span{
+			color: #FFF;
+
+			&:hover{
+				background-color: darken($bg-tools, 12%);
+			}
+		}	
+
+		.snippets{
+			position: relative;
+			padding: 0;
+			background-color: transparent;	
+			display: flex;
+			align-items: center;
+			gap:0 5px;
+
+			.submenu{
+				top: calc(100% + 10px);    	
+			}
+		}	
+
+		.save-code .submenu{
+			right: 0;
+    		left: auto;
+    		align-items: flex-start;
+			width: fit-content;
+		}
+	}
+}
+
