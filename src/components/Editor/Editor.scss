@@ -1,0 +1,39 @@
+.markdown-editor__editor{
+	position: relative;
+    display: flex;
+	flex-direction: column;
+	width: 50%;
+	height: 100%;
+	
+	.status-bar{
+		position: sticky;
+		bottom: 0;
+		padding: 5px 15px;
+		background-color: #007ACC;				
+	    display: flex;
+	    flex-direction: row;
+	    gap:1.5rem;
+
+		p{
+			color: #FFF;
+			font: 400 1.8rem 'Anonymous Pro', monospace;
+			
+			span{
+				font-weight: 900;
+				padding-right: 5px;
+			}				
+		}
+	}
+
+	textarea{
+		overflow-y: scroll;
+		background-color: #2E3440;
+		color: #FFF;
+		font:400 1.6rem 'Fira Code', monospace;
+		outline: none;
+		resize: none;
+		flex-grow: 1;
+		padding: 30px 15px;
+		border:none;
+	}	
+}

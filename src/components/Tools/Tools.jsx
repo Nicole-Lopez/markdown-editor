@@ -1,7 +1,7 @@
 import './Tools.scss';
 import HistoryButtons from './HistoryButtons';
-import SaveCode from './SaveCode';
-import Snippets from './Snippets'
+import Configuration from './Configuration';
+import Snippets from './Snippets';
 
 export default function Tools() {
 	return (
@@ -10,7 +10,7 @@ export default function Tools() {
 				<HistoryButtons/>
 				<Snippets/>	
 			</div>
-			<SaveCode/>
+			<Configuration/>
 		</div>
 	)
 }

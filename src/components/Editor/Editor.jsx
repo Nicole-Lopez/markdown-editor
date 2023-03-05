@@ -1,105 +1,120 @@
-import { useRef, useState } from 'react'
+import { useRef, forwardRef, useImperativeHandle } from 'react';
 import { useInputContext } from '../../utils/hooks/useInputContext';
-import { detectTwoKeys } from '../../utils/functions/detectTwoKeys';
+import { useUpdateEffect } from 'usehooks-ts';
+import './Editor.scss';
+import { SET_CURRENTCURSOR, WRITE_INPUT, NEW_UNDO, UNDO_INPUT, REDO_INPUT, FALSE_UPDATE_INPUT } from '../../context/types';
 
-export default function Editor ({children}) {
+export default forwardRef(function Editor ({children, scrollFunction}, ref) {
 	const textarea = useRef(null)
-	const { input, writeInput, setCurrentCursor, setSpecialChar, undoInput, redoInput } = useInputContext()
-	const [byte, setByte] = useState(0)
-	
-
-	const undoEvent = detectTwoKeys(
-		{key: 'ctrl', keyCode:17},
-		{key: 'z', keyCode:90},
-		(e) => {
-			e.preventDefault()		
-			undoInput()
-		}
-	)
-
-	const redoEvent = detectTwoKeys(
-		{key: 'ctrl', keyCode:17},
-		{key: 'y', keyCode:89},
-		(e) => {
-			e.preventDefault()
-			redoInput()
-		}
-	)
-	const handleKBSize = (e) => {
-	    let byteSize = new Blob([e]).size;
-	    setByte((byteSize / 1024).toFixed(1))
-	}
+	const { input, dispatch, updateInput } = useInputContext()
 
 
+	const handleSelectedText = (e) => {
+		let { selectionStart, selectionEnd } = e.target
 
-	const handleCursorPosition = (e) => {
-		let start = e.target.selectionStart
-		let end = e.target.selectionEnd
-
-		setCurrentCursor(start === end ? e.target.selectionStart : {select:{start:start, end:end}})
+		dispatch({
+			type: SET_CURRENTCURSOR,
+			payload: selectionStart === selectionEnd ? selectionStart : [selectionStart, selectionEnd]
+		})
 	}
 	
 	const handleChange = (e) => {
-		writeInput(e.target.value)
-		handleCursorPosition(e)		
-		handleKBSize(e.target.value)
+		dispatch({
+			type: WRITE_INPUT,
+			payload: e.target.value
+		})
+
+		if (e.target.value.slice(-1) === ' ') dispatch({type: NEW_UNDO})
 	}
 
 	const handlePaste = (e) => {
-		setSpecialChar(true)
-		writeInput(e.target.value)		
+		dispatch({
+			type: WRITE_INPUT,
+			payload: e.target.value
+		})
+
+		setTimeout(()=> (dispatch({type: NEW_UNDO})), 100)
 	}
 
 	const handleKeyDown = (e) => {
-		undoEvent.onkeydownTwoKeys(e)
-		redoEvent.onkeydownTwoKeys(e)
+  		if (e.keyCode === 90 && e.ctrlKey) {
+			e.preventDefault()	
+			dispatch({type: UNDO_INPUT})      		
+      	};
 
-		if ([9, 13, 8].includes(e.keyCode)) setSpecialChar(true)
+  		if (e.keyCode === 89 && e.ctrlKey) {
+			e.preventDefault()	
+			dispatch({type: REDO_INPUT})
+      	};
+
+      	//************************ TAB ************************
+    	const { selectionStart, selectionEnd } = e.target;
 
 	    if (e.keyCode === 9) {
 	    	e.preventDefault();
-	    	const { selectionStart, selectionEnd } = e.target;
-
 	    	const newText = input.substring(0, selectionStart) + "\t" + input.substring(selectionEnd, input.length);
 
 	    	textarea.current.focus();
 	    	textarea.current.value = newText;
-	    	writeInput(newText);							    		
+
+			dispatch({
+				type: WRITE_INPUT,
+				payload: newText
+			})						    		
 
 	    	textarea.current.setSelectionRange(selectionStart + 1, selectionStart + 1);
-	    }		
+	    }
+	    // ************************************************
+
+		if ([9, 13, 8].includes(e.keyCode)){ 
+			if (e.keyCode === 8 && e.target.selectionStart === 0) {
+				return;
+			}
+
+			dispatch({
+				type: WRITE_INPUT,
+				payload: input.substring(0, selectionStart) + String.fromCharCode(e.keyCode) + input.substring(selectionEnd, input.length)
+			})						    		
+			dispatch({type: NEW_UNDO})
+		}
 	}
 
-	const handleKeyUp = (e) => {
-	    undoEvent.onkeyupTwoKeys(e)
-	    redoEvent.onkeyupTwoKeys(e)		
-	}
 
+	useUpdateEffect(() => {
+		if (updateInput) {
+			textarea.current.value = input
+
+			dispatch({type: FALSE_UPDATE_INPUT})		
+		}
+	}, [updateInput])
+
+	useImperativeHandle(ref, () => {
+		return{
+			textarea
+		}
+	})
 
 	return (
 		<div className='markdown-editor__editor'>
 			<textarea 
 				ref={textarea}
-				onClick={handleCursorPosition} 
-				value={input} 
+				autoComplete="off" 
+				autoCorrect="off" 
+				autoCapitalize="off" 
+				spellCheck={false}
 				onChange={handleChange}
+				onClick={handleSelectedText}
 				onPaste={handlePaste}
 				onKeyDown={handleKeyDown}
-				onKeyUp={handleKeyUp}
+				onScroll={scrollFunction}
 			/>
 
-			<p>
-				<span>
-					<span>{input.length}</span> characters
-				</span>
-				<span>
-					<span>{byte}</span> KB
-				</span>
-			</p>
+			<div className='status-bar'>
+				<p><span>{input.length}</span>characters</p>
+				<p><span>{(new Blob([input]).size / 1024).toFixed(1)}</span>KB</p>
+			</div>
 		</div>
 	)
-}
-
-
+})
 
 

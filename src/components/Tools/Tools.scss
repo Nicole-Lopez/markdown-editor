@@ -1,15 +1,13 @@
-@use '../../assets/mixins';
-
 $bg-tools:#345B63;
 
-
 .tools{
-	@include mixins.displayFlex($justify:space-between,$alignI:center);		
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 	position: sticky;
 	top: 0;
 	z-index: 2;
-	width: calc(100% - 10px);
-	padding: 10px 5px;
+	padding: 0 5px;
 	background-color: $bg-tools;	
 
 	li{
@@ -146,16 +144,26 @@ $bg-tools:#345B63;
 		} 
 	}
 
-	.save-code .submenu{
-		flex-direction: column;
+	.configuration{
+		display: flex;
+		align-items: center;
+		gap:8px;
 
-    	svg{
-    		margin-right: 5px;
-    	}
+		.scroll-sync--active{
+			background-color: darken($bg-tools, 12%);	
+		}
 
-		button{
-			font-size: 1.8rem;
-		}	
+		.save-code .submenu{
+			flex-direction: column;
+
+	    	svg{
+	    		margin-right: 5px;
+	    	}
+
+			button{
+				font-size: 1.8rem;
+			}	
+		}		
 	}
 }
 
@@ -181,7 +189,7 @@ $bg-tools:#345B63;
 			gap:0 5px;
 
 			.submenu{
-				top: calc(100% + 10px);    	
+				top: calc(100% + 9px);    	
 			}
 		}	
 
@@ -189,7 +197,7 @@ $bg-tools:#345B63;
 			right: 0;
     		left: auto;
     		align-items: flex-start;
-			width: fit-content;
+			width: 21.5rem;
 		}
 	}
 }

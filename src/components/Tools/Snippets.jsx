@@ -1,9 +1,10 @@
 import { useInputContext } from '../../utils/hooks/useInputContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisVertical, faListUl,faListCheck, faListOl, faBold, faItalic, faHeading, faList, faCode, faLink, faImage, faTable, faQuoteRight } from '@fortawesome/free-solid-svg-icons';
+import { TABLE_OF_CONTENTS, BASIC_SNIPPETS, NEW_UNDO } from '../../context/types';
 
 export default function Snippets() {
-	const { setInput, currentCursor, setUndo, mobile } = useInputContext()
+	const { mobile, dispatch } = useInputContext()
 
 	let snippetSimple = [
 		{type: 'bold', icon: faBold},
@@ -47,89 +48,17 @@ export default function Snippets() {
 	]
 
 
-	const markdownSnippets = (type, selectText) => {
-		if (!selectText) selectText = 'yourText'
-		
-		let markdown = {
-			bold : `**${selectText}**`,
-			italic : `*${selectText}*`,
-			code : `\n${'``'}\n${selectText}\n${'``'}\n`,
-			link : `[${selectText}](https://yourLink.com "title")`,
-			image : `![${selectText}](image.png)`,
-			table : 
-`
-| headerA | headerB |
-| -- | -- |
-| dataA1 | dataB1 |
-| dataA2 | dataB2 |
-`,
-			quote : `\n> ${selectText}\n`,
-			h1 : `\n# ${selectText}\n`,
-			h2 : `\n## ${selectText}\n`,
-			h3 : `\n### ${selectText}\n`,
-			h4 : `\n#### ${selectText}\n`,
-			h5 : `\n##### ${selectText}\n`,
-			h6 : `\n###### ${selectText}\n`,
-			ulList : '\n- First item\n- Second item\n- Third item\n',
-			olList : '\n1. First item\n2. Second item\n3. Third item\n',
-			checkList : '\n- [ ] First item\n- [ ] Second item\n- [ ] Third item\n',
-			horizontalRule : '\n---\n',
-			comment : `\n[comment]: # (${selectText})\n`,
-			linkingImage : '[![Alt](image.png "title")](https://yourLink.com)',
-			strikethroughText : `~~${selectText}~~`,
-			footnote : 
-`
-${selectText} [^ref]
-[^ref]: footnote.
-`
-		}
-
-		return markdown[type]
-	}
-
-
 	const handleAddSnippets = (type) => {
 		if (type === 'tableOfContents') {
-			setInput(prev => {
-				let table = '## Table of Contents'
-
-				let allHeadings = prev.match(/[\r\n]#+[ ]([aA-zZ].*)/g).map(e => e.substring(1))
-				
-				let levelHeading = allHeadings.map(e=> e.match(/#+/g)[0].length)
-				let range = Array.from({length: Math.max(...levelHeading) - 1}, (v,k) => k + Math.min(...levelHeading))
-
-
-				for (let i = 0; i < allHeadings.length; i++) {
-					let cleanHeading = allHeadings[i].substring(levelHeading[i] + 1)
-
-					table += `\n${'\t'.repeat(range.indexOf(levelHeading[i]))}- [${cleanHeading}](#${cleanHeading.toLowerCase().replace(/\s/g, "-")})`
-				}
-
-				return prev.substring(0, currentCursor) + table + prev.substring(currentCursor, prev.length)
-			})
-
+			dispatch({type: TABLE_OF_CONTENTS})		
 		} else {
-			setInput(e => {			
-				let markdown = markdownSnippets(type, currentCursor.select ? e.substring(currentCursor.select.start, currentCursor.select.end) : null)
-
-			    let textBeforeCursorPosition
-			    let textAfterCursorPosition 
-
-				if (currentCursor.select) {
-		    		textBeforeCursorPosition = e.substring(0,currentCursor.select.start)
-		    		textAfterCursorPosition =  e.substring(currentCursor.select.end,e.length)
-			
-				} else {
-				    textBeforeCursorPosition = e.substring(0, currentCursor)
-				    textAfterCursorPosition = e.substring(currentCursor, e.length)
-				}	
-
-				let	res = textBeforeCursorPosition + markdown + textAfterCursorPosition
-				setUndo(prev => ([ ...prev, res]))	
-
-				return res			
-			})			
+			dispatch({
+				type: BASIC_SNIPPETS,
+				payload: type
+			})
 		}
+		
+		dispatch({type: NEW_UNDO})	
 	}
 
 
