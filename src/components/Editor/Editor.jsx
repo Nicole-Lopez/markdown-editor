@@ -19,12 +19,19 @@ export default forwardRef(function Editor ({children, scrollFunction}, ref) {
 	}
 	
 	const handleChange = (e) => {
+		let { value, selectionStart } = e.target
+
 		dispatch({
 			type: WRITE_INPUT,
-			payload: e.target.value
+			payload: value
 		})
 
-		if (e.target.value.slice(-1) === ' ') dispatch({type: NEW_UNDO})
+		if (value.slice(-1) === ' ') dispatch({type: NEW_UNDO})
+		
+		dispatch({
+			type: SET_CURRENTCURSOR,
+			payload: selectionStart
+		})	
 	}
 
 	const handlePaste = (e) => {
