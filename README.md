@@ -12,7 +12,7 @@
 
 ## Table of Contents
 - [Built With](#built-with)
-	- [Use:](#use:)
+	- [Use](#use)
 - [Installation](#installation)
 - [Project status](#project-status)
 - [Contact](#contact)
@@ -31,7 +31,7 @@
 </span>
 </div>
 
-### Use:
+### Use
 
 - [react-markdown](https://github.com/remarkjs/react-markdown) to render markdown
 - Hooks from [usehooks-ts](https://github.com/juliencrn/usehooks-ts) 
