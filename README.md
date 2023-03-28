@@ -7,8 +7,19 @@
 - Synchronized scroll
 - Responsive
 
+![screenshot](./src/assets/screenshot.png)
 
 <p align="center"><a href="https://nicole-lopez.github.io/markdown-editor/">View demo</a></p>
+
+---
+
+**This is a new improved version of a Markdown Previewer made as a project for freeCodeCamp**
+
+**REPOSITORY: https://github.com/Nicole-Lopez/markdownPreviewer**
+
+**DEPLOY: https://nicole-lopez.github.io/markdownPreviewer/**
+
+---
 
 ## Table of Contents
 - [Built With](#built-with)
